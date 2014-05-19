@@ -15,10 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class AudioPlayerActivity extends Activity implements
-		OnPreparedListener, OnCompletionListener {
-
-	
+public class AudioPlayerActivity extends Activity {
+	// implements
+	// OnPreparedListener, OnCompletionListener
 
 	MediaPlayer mediaPlayer;
 
@@ -31,7 +30,7 @@ public class AudioPlayerActivity extends Activity implements
 	}
 
 	public void onClickStart(View view) throws IOException {
-		releaseMP();
+		// releaseMP();
 
 		switch (view.getId()) {
 
@@ -39,7 +38,8 @@ public class AudioPlayerActivity extends Activity implements
 			// mediaPlayer = MediaPlayer.create(this, R.raw.music);
 			// mediaPlayer.start();
 			Singleton s = Singleton.getInstance();
-			s.Play();
+			// s.Create();
+			// s.Play();
 			TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 			textStatusPlaying.setText(R.string.playing);
 			Button btn = (Button) findViewById(R.id.btnPlay);
@@ -53,41 +53,4 @@ public class AudioPlayerActivity extends Activity implements
 
 	}
 
-	private void releaseMP() {
-		if (mediaPlayer != null) {
-			try {
-				mediaPlayer.release();
-				mediaPlayer = null;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public void onClick(View view) {
-		if (mediaPlayer == null)
-			return;
-		switch (view.getId()) {
-		case R.id.btnPause:
-			if (mediaPlayer.isPlaying()) {
-				mediaPlayer.pause();
-				TextView textStatusPaused = (TextView) findViewById(R.id.statusOfMusic);
-				textStatusPaused.setText(R.string.paused);
-			}
-			break;
-
-		}
-	}
-	@Override
-	public void onPrepared(MediaPlayer mp) {
-		mp.start();
-	}
-	
-	public void onCompletion(MediaPlayer mp) {
-	}
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		releaseMP();
-	}
 }
