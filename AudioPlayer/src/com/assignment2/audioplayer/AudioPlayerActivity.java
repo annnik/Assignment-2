@@ -18,14 +18,9 @@ import android.widget.TextView;
 public class AudioPlayerActivity extends Activity implements
 		OnPreparedListener, OnCompletionListener {
 
-	final String LOG_TAG = "myLogs";
+	
 
-	final String DATA_SD = Environment
-			.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-			+ "/music.mp3";
-
-    MediaPlayer mediaPlayer;
-	AudioManager am;
+	MediaPlayer mediaPlayer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +30,14 @@ public class AudioPlayerActivity extends Activity implements
 		textStatusIdle.setText(R.string.idle);
 	}
 
-	
-
 	public void onClickStart(View view) throws IOException {
 		releaseMP();
 
 		switch (view.getId()) {
 
 		case R.id.btnPlay:
-			Log.d(LOG_TAG, "start Raw");
-			//mediaPlayer = MediaPlayer.create(this, R.raw.music);
-			//mediaPlayer.start();
+			// mediaPlayer = MediaPlayer.create(this, R.raw.music);
+			// mediaPlayer.start();
 			Singleton s = Singleton.getInstance();
 			s.Play();
 			TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
@@ -59,7 +51,6 @@ public class AudioPlayerActivity extends Activity implements
 		if (mediaPlayer == null)
 			return;
 
-		//mediaPlayer.setOnCompletionListener(this);
 	}
 
 	private void releaseMP() {
@@ -87,18 +78,13 @@ public class AudioPlayerActivity extends Activity implements
 
 		}
 	}
-
 	@Override
 	public void onPrepared(MediaPlayer mp) {
-		Log.d(LOG_TAG, "onPrepared");
 		mp.start();
 	}
-
-	@Override
+	
 	public void onCompletion(MediaPlayer mp) {
-		Log.d(LOG_TAG, "onCompletion");
 	}
-
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
