@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">audioplayer</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="paused">Status: Paused</string>
+    <string name="playing">Status: Playing</string>
+    <string name="idle">Status: Idle</string>
+    <string name="play">Play</string>
+    <string name="status">Status</string>
+    <string name="pause">Pause</string>
+<string name="music_name">music.mp3 - "Bach-Prelude for unaccompanied cello suite"</string>
+</resources>
