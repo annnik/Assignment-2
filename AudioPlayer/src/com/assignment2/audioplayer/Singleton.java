@@ -4,7 +4,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.TextView;
-
+//RENAME THIS CLASS TO AudioPlayer
 public class Singleton {
 	MediaPlayer mediaPlayer;
 	private static AudioPlayerApplication app;
