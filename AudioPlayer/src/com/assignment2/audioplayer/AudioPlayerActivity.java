@@ -16,8 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class AudioPlayerActivity extends Activity {
-	// implements
-	// OnPreparedListener, OnCompletionListener
+
 
 	MediaPlayer mediaPlayer;
 
@@ -30,16 +29,13 @@ public class AudioPlayerActivity extends Activity {
 	}
 
 	public void onClickStart(View view) throws IOException {
-		// releaseMP();
-
+	
 		switch (view.getId()) {
 
 		case R.id.btnPlay:
-			// mediaPlayer = MediaPlayer.create(this, R.raw.music);
-			// mediaPlayer.start();
 			Singleton s = Singleton.getInstance();
-			// s.Create();
-			// s.Play();
+			mediaPlayer= s.Create();
+			mediaPlayer.start();
 			TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 			textStatusPlaying.setText(R.string.playing);
 			Button btn = (Button) findViewById(R.id.btnPlay);
