@@ -33,9 +33,9 @@ public class AudioPlayerActivity extends Activity {
 	public void onClickStart(View view) throws IOException {
 
 		switch (view.getId()) {
-//manyetsya na play pri povorote
+		// manyetsya na play pri povorote
 		case R.id.btnPlay:
-			if ((!isPlayingFlag)&&(!isFirstPlayingFlag)) {
+			if ((!isPlayingFlag) && (!isFirstPlayingFlag)) {
 				Singleton s = Singleton.getInstance();
 				mediaPlayer = s.Create();
 				mediaPlayer.start();
@@ -44,15 +44,26 @@ public class AudioPlayerActivity extends Activity {
 				Button btn = (Button) findViewById(R.id.btnPlay);
 
 				btn.setText(R.string.pause);
-				isPlayingFlag = true;isFirstPlayingFlag=true;
+				isPlayingFlag = true;
+				isFirstPlayingFlag = true;
 			} else {
-				if(!isPlayingFlag)
-				mediaPlayer.pause();
-				Button btn = (Button) findViewById(R.id.btnPlay);
-				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-				textStatusPlaying.setText(R.string.paused);
-				btn.setText(R.string.play);
-				isPlayingFlag = false;
+				if ((isPlayingFlag) && (isFirstPlayingFlag)) {
+					mediaPlayer.pause();
+					Button btn = (Button) findViewById(R.id.btnPlay);
+					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+					textStatusPlaying.setText(R.string.paused);
+					btn.setText(R.string.play);
+					isPlayingFlag = false;
+				} else if ((!isPlayingFlag) && (isFirstPlayingFlag)) {
+					mediaPlayer.start();
+					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+					textStatusPlaying.setText(R.string.playing);
+					Button btn = (Button) findViewById(R.id.btnPlay);
+
+					btn.setText(R.string.pause);
+					isPlayingFlag = true;
+
+				}
 			}
 			break;
 
