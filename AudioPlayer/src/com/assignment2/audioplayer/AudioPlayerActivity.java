@@ -1,6 +1,7 @@
 package com.assignment2.audioplayer;
 
 import java.io.IOException;
+import java.util.Date;
 
 import android.app.Activity;
 import android.content.ContentUris;
@@ -19,15 +20,36 @@ public class AudioPlayerActivity extends Activity {
 
 	public boolean isPlayingFlag = false;
 	public boolean isFirstPlayingFlag = false;
+	private boolean turningFlag = false;
+	private boolean firstCreate = false;
 	MediaPlayer mediaPlayer;
+	private static final String TURNING_FLAG = "turningFlag";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		isPlayingFlag = false;
-		setContentView(R.layout.a_audioplayer);
-		TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
-		textStatusIdle.setText(R.string.idle);
+		if (!firstCreate) {
+			firstCreate=true;
+			isPlayingFlag = false;
+			setContentView(R.layout.a_audioplayer);
+			if (savedInstanceState != null) {
+				turningFlag = savedInstanceState.getBoolean(TURNING_FLAG, true);
+				if (turningFlag == false) {
+					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+					textStatusPlaying.setText(R.string.playing);
+					turningFlag = true;
+				}
+
+			} else {
+				if ((!isPlayingFlag) && (!isFirstPlayingFlag)) {
+
+					TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
+					textStatusIdle.setText(R.string.idle);
+				}
+				turningFlag = false;
+			}
+		}
+
 	}
 
 	public void onClickStart(View view) throws IOException {
@@ -35,7 +57,7 @@ public class AudioPlayerActivity extends Activity {
 		switch (view.getId()) {
 		// manyetsya na play pri povorote
 		case R.id.btnPlay:
-			if ((!isPlayingFlag) && (!isFirstPlayingFlag)) {
+			if ((!isPlayingFlag) && (!isFirstPlayingFlag) && (!turningFlag)) {
 				Singleton s = Singleton.getInstance();
 				mediaPlayer = s.Create();
 				mediaPlayer.start();
@@ -63,6 +85,25 @@ public class AudioPlayerActivity extends Activity {
 					btn.setText(R.string.pause);
 					isPlayingFlag = true;
 
+				} else if ((!isPlayingFlag) && (!isFirstPlayingFlag)
+						&& (turningFlag)) {
+					Singleton s = Singleton.getInstance();
+					mediaPlayer = s.Create();
+					mediaPlayer.start();
+					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+					textStatusPlaying.setText(R.string.playing);
+					Button btn = (Button) findViewById(R.id.btnPlay);
+
+					btn.setText(R.string.pause);
+					isPlayingFlag = true;
+				} else if ((isPlayingFlag) && (!isFirstPlayingFlag)
+						&& (turningFlag)) {
+					mediaPlayer.pause();
+					Button btn = (Button) findViewById(R.id.btnPlay);
+					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+					textStatusPlaying.setText(R.string.paused);
+					btn.setText(R.string.play);
+					isPlayingFlag = false;
 				}
 			}
 			break;
@@ -71,6 +112,14 @@ public class AudioPlayerActivity extends Activity {
 		if (mediaPlayer == null)
 			return;
 
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+
+		outState.putBoolean(TURNING_FLAG, turningFlag);
+
+		super.onSaveInstanceState(outState);
 	}
 
 }
