@@ -7,7 +7,8 @@ public class AudioPlayerSingleton {
 	MediaPlayer mediaPlayer;
 	int currentValue;
 	AudioManager mAudioManager;
-	private static final String AUDIO_SERVICE="audio"; 
+	private static final String AUDIO_SERVICE = "audio";
+
 	public static class SingletonHolder {
 		public static final AudioPlayerSingleton HOLDER_INSTANCE = new AudioPlayerSingleton();
 
@@ -16,6 +17,10 @@ public class AudioPlayerSingleton {
 	public static AudioPlayerSingleton getInstance() {
 
 		return SingletonHolder.HOLDER_INSTANCE;
+	}
+
+	private AudioPlayerSingleton() {
+		create();
 	}
 
 	public void create() {
@@ -45,15 +50,16 @@ public class AudioPlayerSingleton {
 	}
 
 	public int currentVolume() {
-		
-		mAudioManager = (AudioManager) AudioPlayerApplication.getContext().getSystemService(AUDIO_SERVICE);
-		currentValue = mAudioManager
-				.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+		mAudioManager = (AudioManager) AudioPlayerApplication.getContext()
+				.getSystemService(AUDIO_SERVICE);
+		currentValue = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 		return currentValue;
 	}
-	public void setVolume(int currentValue)
-	{
-		mAudioManager = (AudioManager) AudioPlayerApplication.getContext().getSystemService(AUDIO_SERVICE);
+
+	public void setVolume(int currentValue) {
+		mAudioManager = (AudioManager) AudioPlayerApplication.getContext()
+				.getSystemService(AUDIO_SERVICE);
 		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
 				0);
 	}

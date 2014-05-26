@@ -13,19 +13,18 @@ import android.widget.TextView;
 public class AudioPlayerActivity extends Activity implements
 		SeekBar.OnSeekBarChangeListener {
 
-	private boolean firstCreate = true;
 	MediaPlayer mediaPlayer;
 	private static final String IS_PLAYING_FLAG = "isPlayingFlag";
 	private SeekBar mSeekBar;
 	TextView mTextValue;
 	private int currentValue;
 	Button btn;
-	boolean isPlayingFlag = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		boolean isPlayingFlag = false;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_audioplayer);
-
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
 		currentValue = singletonPlayer.currentVolume();
@@ -34,11 +33,13 @@ public class AudioPlayerActivity extends Activity implements
 		mSeekBar.setMax(99);
 		mSeekBar.setProgress(currentValue);
 		mSeekBar.setOnSeekBarChangeListener(this);
+
 		if ((savedInstanceState != null)
 				&& (singletonPlayer.returnMediaplayer() != null)) {
 
 			isPlayingFlag = savedInstanceState
 					.getBoolean(IS_PLAYING_FLAG, true);
+
 			if (isPlayingFlag == true) {
 				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 				textStatusPlaying.setText(R.string.playing);
@@ -54,7 +55,7 @@ public class AudioPlayerActivity extends Activity implements
 
 		} else {
 			if (!isPlayingFlag) {
-
+				playerCreate();
 				TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
 				textStatusIdle.setText(R.string.idle);
 			}
@@ -68,9 +69,6 @@ public class AudioPlayerActivity extends Activity implements
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
 		singletonPlayer.create();
-		singletonPlayer.start();
-		TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-		textStatusPlaying.setText(R.string.playing);
 	}
 
 	private void playerStart() {
@@ -79,6 +77,8 @@ public class AudioPlayerActivity extends Activity implements
 		singletonPlayer.start();
 		TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 		textStatusPlaying.setText(R.string.playing);
+		btn = (Button) findViewById(R.id.btnPlay);
+		btn.setText(R.string.pause);
 	}
 
 	private void playerPause() {
@@ -88,39 +88,42 @@ public class AudioPlayerActivity extends Activity implements
 
 		TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 		textStatusPlaying.setText(R.string.paused);
+		btn = (Button) findViewById(R.id.btnPlay);
+		btn.setText(R.string.play);
 	}
 
 	public void onClickStart(View view) throws IOException {
-		
+		boolean isPlayingFlag = playerIsPlaying();
+
 		switch (view.getId()) {
 		case R.id.btnPlay:
-			Button btn = (Button) findViewById(R.id.btnPlay);
-			if ((!isPlayingFlag) && (firstCreate)) {
-				playerCreate();
-				btn.setText(R.string.pause);
+			if (!isPlayingFlag) {
+				playerStart();
+
 				isPlayingFlag = true;
 			} else {
-				if (isPlayingFlag) {
-					playerPause();
-					btn.setText(R.string.play);
-					isPlayingFlag = false;
-				} else {
-					if ((!isPlayingFlag) && (!firstCreate)) {
-						playerStart();
-						btn.setText(R.string.pause);
-						isPlayingFlag = true;
-					}
-				}
+				playerPause();
+				isPlayingFlag = false;
 
 			}
-
-			firstCreate = false;
 			break;
 
 		}
 		if (mediaPlayer == null)
 			return;
 
+	}
+
+	public boolean playerIsPlaying() {
+		boolean isPlayingFlag = false;
+		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
+				.getInstance();
+		if (singletonPlayer.returnMediaplayer() != null) {
+			if (singletonPlayer.isPlaying()) {
+				isPlayingFlag = true;
+			}
+		}
+		return isPlayingFlag;
 	}
 
 	@Override
