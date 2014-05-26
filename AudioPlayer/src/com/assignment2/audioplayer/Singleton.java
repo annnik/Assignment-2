@@ -3,12 +3,15 @@ package com.assignment2.audioplayer;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 //RENAME THIS CLASS TO AudioPlayer
 public class Singleton {
 	MediaPlayer mediaPlayer;
 	private static AudioPlayerApplication app;
+	
 
 	public static class SingletonHolder {
 		public static final Singleton HOLDER_INSTANCE = new Singleton();
@@ -20,16 +23,7 @@ public class Singleton {
 		return SingletonHolder.HOLDER_INSTANCE;
 	}
 
-	private void releaseMP() {
-		if (mediaPlayer != null) {
-			try {
-				mediaPlayer.release();
-				mediaPlayer = null;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+	
 
 	public void Create() {
 
@@ -52,4 +46,12 @@ public class Singleton {
 		return mediaPlayer.isPlaying();
 	}
 
+	public MediaPlayer returnMediaplayer() {
+		return mediaPlayer;
+	}
+
+	/*public MediaPlayer dataForSeekBar() {
+		seek = (SeekBar) getView().findViewById(R.id.seekBar);
+		mediaPlayer.setVolume(seek.getProgress(), seek.getProgress());
+	}*/
 }

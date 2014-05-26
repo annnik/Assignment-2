@@ -66,4 +66,20 @@
     android:layout_marginRight="18dp"
     android:text="@string/" />-->
 
+<SeekBar
+    android:id="@+id/seekBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/btnPlay"
+    android:layout_alignLeft="@+id/statusOfMusic"
+    android:layout_marginBottom="32dp" />
+
+<TextView
+    android:id="@+id/currentVolume"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/seekBar"
+    android:layout_centerHorizontal="true"
+    android:text="currentVolume" />
+
 </RelativeLayout>
