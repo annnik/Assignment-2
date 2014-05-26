@@ -1000,10 +1000,10 @@ containing a value of this type.
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
         public static final int btnPause=0x7f06001a;
-        public static final int btnPlay=0x7f06001b;
+        public static final int btnPlay=0x7f06001f;
         public static final int checkbox=0x7f060033;
         public static final int collapseActionView=0x7f06000d;
-        public static final int currentVolume=0x7f06001f;
+        public static final int currentVolume=0x7f06001d;
         public static final int default_activity_button=0x7f06002e;
         public static final int dialog=0x7f06000e;
         public static final int disableHome=0x7f060008;
@@ -1020,7 +1020,7 @@ containing a value of this type.
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f06002f;
         public static final int middle=0x7f060012;
-        public static final int music_name=0x7f06001c;
+        public static final int music_name=0x7f06001b;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
@@ -1043,7 +1043,7 @@ containing a value of this type.
         public static final int showHome=0x7f060004;
         public static final int showTitle=0x7f060006;
         public static final int split_action_bar=0x7f060024;
-        public static final int statusOfMusic=0x7f06001d;
+        public static final int statusOfMusic=0x7f06001c;
         public static final int submit_area=0x7f06003f;
         public static final int tabMode=0x7f060002;
         public static final int title=0x7f060031;

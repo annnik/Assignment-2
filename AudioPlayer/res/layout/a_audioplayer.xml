@@ -1,11 +1,4 @@
 
-<!--  <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.assignment2.audioplayer.AudioPlayerActivity"
-    tools:ignore="MergeRootFrame" />-->
 
 <RelativeLayout
  xmlns:tools="http://schemas.android.com/tools"
@@ -26,17 +19,6 @@
  android:textSize="12sp">
 </Button>
 
-<Button
-    android:id="@+id/btnPlay"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:layout_centerHorizontal="true"
-    android:onClick="onClickStart"
-    android:text="@string/play"
-    android:layout_marginBottom="74dp"
-    />
-
 <TextView
     android:id="@+id/music_name"
     android:layout_width="wrap_content"
@@ -56,16 +38,6 @@
     android:layout_marginTop="28dp"
     android:text="@string/status" />
 
-
-
-<SeekBar
-    android:id="@+id/seekBar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_above="@+id/btnPlay"
-    android:layout_alignLeft="@+id/statusOfMusic"
-    android:layout_marginBottom="32dp" />
-
 <TextView
     android:id="@+id/currentVolume"
     android:layout_width="wrap_content"
@@ -73,5 +45,22 @@
     android:layout_above="@+id/seekBar"
     android:layout_centerHorizontal="true"
     android:text="@string/currentVolume" />
+
+<Button
+    android:id="@+id/btnPlay"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="22dp"
+    android:onClick="onClickStart"
+    android:text="@string/play" />
+
+<SeekBar
+    android:id="@+id/seekBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/statusOfMusic"
+    android:layout_below="@+id/statusOfMusic" />
 
 </RelativeLayout>

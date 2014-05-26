@@ -1,12 +1,9 @@
 package com.assignment2.audioplayer;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 
-//RENAME THIS CLASS TO AudioPlayer
 public class AudioPlayerSingleton {
 	MediaPlayer mediaPlayer;
-	private static AudioPlayerApplication app;
 	
 
 	public static class SingletonHolder {
@@ -23,7 +20,7 @@ public class AudioPlayerSingleton {
 
 	public void Create() {
 
-		mediaPlayer = MediaPlayer.create(app.getContext(), R.raw.music);
+		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(), R.raw.music);
 
 	}
 

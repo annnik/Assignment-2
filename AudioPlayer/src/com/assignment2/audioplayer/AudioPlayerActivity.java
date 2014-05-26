@@ -22,15 +22,16 @@ public class AudioPlayerActivity extends Activity implements
 	TextView mTextValue;
 	private int currentValue;
 	AudioManager mAudioManager;
+	Button btn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if (firstCreate) {
+		setContentView(R.layout.a_audioplayer);
+		
 
 			isPlayingFlag = false;
-			setContentView(R.layout.a_audioplayer);
+
 			mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 			currentValue = mAudioManager
 					.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -39,29 +40,32 @@ public class AudioPlayerActivity extends Activity implements
 			mSeekBar.setMax(99);
 			mSeekBar.setProgress(currentValue);
 			mSeekBar.setOnSeekBarChangeListener(this);
-			Button btn = (Button) findViewById(R.id.btnPlay);
-			if (savedInstanceState != null) {
+			AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
+			if ((savedInstanceState != null) && (s.returnMediaplayer() != null)) {
+
 				isPlayingFlag = savedInstanceState.getBoolean(IS_PLAYING_FLAG,
 						true);
 				if (isPlayingFlag == true) {
 					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusPlaying.setText(R.string.playing);
-
+					btn = (Button) findViewById(R.id.btnPlay);
 					btn.setText(R.string.pause);
 
 				} else {
 					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusPlaying.setText(R.string.paused);
+					btn = (Button) findViewById(R.id.btnPlay);
 					btn.setText(R.string.play);
 				}
+
 			} else {
-				if ((!isPlayingFlag) && (firstCreate)) {
+				if (!isPlayingFlag)  {
 
 					TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusIdle.setText(R.string.idle);
 				}
 
-			}
+			
 		}
 
 	}
@@ -114,11 +118,12 @@ public class AudioPlayerActivity extends Activity implements
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
-		if (s.isPlaying()) {
-			isPlayingFlag = true;
+		if (s.returnMediaplayer() != null) {
+			if (s.isPlaying()) {
+				isPlayingFlag = true;
+			}
+			outState.putBoolean(IS_PLAYING_FLAG, isPlayingFlag);
 		}
-		outState.putBoolean(IS_PLAYING_FLAG, isPlayingFlag);
-
 		super.onSaveInstanceState(outState);
 	}
 
@@ -127,6 +132,9 @@ public class AudioPlayerActivity extends Activity implements
 			boolean fromUser) {
 		// TODO Auto-generated method stub
 		mTextValue.setText(String.valueOf(mSeekBar.getProgress()));
+		currentValue = mSeekBar.getProgress();
+		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
+				0);
 	}
 
 	@Override

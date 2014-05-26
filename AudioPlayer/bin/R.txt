@@ -243,10 +243,10 @@ int id activity_chooser_view_content 0x7f06002b
 int id always 0x7f06000b
 int id beginning 0x7f060011
 int id btnPause 0x7f06001a
-int id btnPlay 0x7f06001b
+int id btnPlay 0x7f06001f
 int id checkbox 0x7f060033
 int id collapseActionView 0x7f06000d
-int id currentVolume 0x7f06001f
+int id currentVolume 0x7f06001d
 int id default_activity_button 0x7f06002e
 int id dialog 0x7f06000e
 int id disableHome 0x7f060008
@@ -263,7 +263,7 @@ int id image 0x7f06002d
 int id listMode 0x7f060001
 int id list_item 0x7f06002f
 int id middle 0x7f060012
-int id music_name 0x7f06001c
+int id music_name 0x7f06001b
 int id never 0x7f060009
 int id none 0x7f060010
 int id normal 0x7f060000
@@ -286,7 +286,7 @@ int id showCustom 0x7f060007
 int id showHome 0x7f060004
 int id showTitle 0x7f060006
 int id split_action_bar 0x7f060024
-int id statusOfMusic 0x7f06001d
+int id statusOfMusic 0x7f06001c
 int id submit_area 0x7f06003f
 int id tabMode 0x7f060002
 int id title 0x7f060031
