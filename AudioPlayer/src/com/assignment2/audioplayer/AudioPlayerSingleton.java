@@ -1,5 +1,6 @@
 package com.assignment2.audioplayer;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
@@ -7,7 +8,6 @@ public class AudioPlayerSingleton {
 	MediaPlayer mediaPlayer;
 	int currentValue;
 	AudioManager mAudioManager;
-	private static final String AUDIO_SERVICE = "audio";
 
 	public static class SingletonHolder {
 		public static final AudioPlayerSingleton HOLDER_INSTANCE = new AudioPlayerSingleton();
@@ -23,8 +23,10 @@ public class AudioPlayerSingleton {
 		create();
 	}
 
-	public void create() {
-
+	private void create() {
+		AudioPlayerApplication.getContext();
+		mAudioManager = (AudioManager) AudioPlayerApplication.getContext()
+				.getSystemService(Context.AUDIO_SERVICE);
 		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(),
 				R.raw.music);
 
@@ -45,21 +47,22 @@ public class AudioPlayerSingleton {
 		return mediaPlayer.isPlaying();
 	}
 
-	public MediaPlayer returnMediaplayer() {
-		return mediaPlayer;
+	public boolean existanceOfMediaplayer() {
+		boolean flag=false;
+		if( mediaPlayer==null) flag=false;
+		else flag=true;
+		return flag;
 	}
 
 	public int currentVolume() {
 
-		mAudioManager = (AudioManager) AudioPlayerApplication.getContext()
-				.getSystemService(AUDIO_SERVICE);
+		
 		currentValue = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 		return currentValue;
 	}
 
 	public void setVolume(int currentValue) {
-		mAudioManager = (AudioManager) AudioPlayerApplication.getContext()
-				.getSystemService(AUDIO_SERVICE);
+		
 		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
 				0);
 	}

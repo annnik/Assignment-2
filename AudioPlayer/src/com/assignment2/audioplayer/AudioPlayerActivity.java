@@ -14,7 +14,6 @@ public class AudioPlayerActivity extends Activity implements
 		SeekBar.OnSeekBarChangeListener {
 
 	MediaPlayer mediaPlayer;
-	private static final String IS_PLAYING_FLAG = "isPlayingFlag";
 	private SeekBar mSeekBar;
 	TextView mTextValue;
 	private int currentValue;
@@ -22,7 +21,7 @@ public class AudioPlayerActivity extends Activity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		boolean isPlayingFlag = false;
+		boolean isPlayingFlag = playerIsPlaying();
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_audioplayer);
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
@@ -34,11 +33,7 @@ public class AudioPlayerActivity extends Activity implements
 		mSeekBar.setProgress(currentValue);
 		mSeekBar.setOnSeekBarChangeListener(this);
 
-		if ((savedInstanceState != null)
-				&& (singletonPlayer.returnMediaplayer() != null)) {
-
-			isPlayingFlag = savedInstanceState
-					.getBoolean(IS_PLAYING_FLAG, true);
+		if (singletonPlayer.existanceOfMediaplayer()) {
 
 			if (isPlayingFlag == true) {
 				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
@@ -55,20 +50,12 @@ public class AudioPlayerActivity extends Activity implements
 
 		} else {
 			if (!isPlayingFlag) {
-				playerCreate();
 				TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
 				textStatusIdle.setText(R.string.idle);
 			}
 
 		}
 
-	}
-
-	private void playerCreate() {
-
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		singletonPlayer.create();
 	}
 
 	private void playerStart() {
@@ -118,7 +105,7 @@ public class AudioPlayerActivity extends Activity implements
 		boolean isPlayingFlag = false;
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
-		if (singletonPlayer.returnMediaplayer() != null) {
+		if (singletonPlayer.existanceOfMediaplayer()) {
 			if (singletonPlayer.isPlaying()) {
 				isPlayingFlag = true;
 			}
@@ -126,20 +113,7 @@ public class AudioPlayerActivity extends Activity implements
 		return isPlayingFlag;
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		boolean isPlayingFlag = false;
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		if (singletonPlayer.returnMediaplayer() != null) {
-			if (singletonPlayer.isPlaying()) {
-				isPlayingFlag = true;
-			}
-			outState.putBoolean(IS_PLAYING_FLAG, isPlayingFlag);
-		}
-		super.onSaveInstanceState(outState);
-	}
-
+	
 	@Override
 	public void onProgressChanged(SeekBar mSeekBar, int progress,
 			boolean fromUser) {
