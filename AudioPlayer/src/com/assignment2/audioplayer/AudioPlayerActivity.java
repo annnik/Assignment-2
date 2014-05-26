@@ -24,6 +24,8 @@ public class AudioPlayerActivity extends Activity implements
 		boolean isPlayingFlag = playerIsPlaying();
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_audioplayer);
+		TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+		textStatusPlaying.setText(R.string.idle);
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
 		currentValue = singletonPlayer.currentVolume();
@@ -32,29 +34,19 @@ public class AudioPlayerActivity extends Activity implements
 		mSeekBar.setMax(99);
 		mSeekBar.setProgress(currentValue);
 		mSeekBar.setOnSeekBarChangeListener(this);
-
-		if (singletonPlayer.existanceOfMediaplayer()) {
-
+		
+		
 			if (isPlayingFlag == true) {
-				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 				textStatusPlaying.setText(R.string.playing);
 				btn = (Button) findViewById(R.id.btnPlay);
 				btn.setText(R.string.pause);
 
 			} else {
-				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-				textStatusPlaying.setText(R.string.paused);
+				
 				btn = (Button) findViewById(R.id.btnPlay);
 				btn.setText(R.string.play);
 			}
 
-		} else {
-			if (!isPlayingFlag) {
-				TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
-				textStatusIdle.setText(R.string.idle);
-			}
-
-		}
 
 	}
 
@@ -105,11 +97,9 @@ public class AudioPlayerActivity extends Activity implements
 		boolean isPlayingFlag = false;
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
-		if (singletonPlayer.existanceOfMediaplayer()) {
 			if (singletonPlayer.isPlaying()) {
 				isPlayingFlag = true;
 			}
-		}
 		return isPlayingFlag;
 	}
 

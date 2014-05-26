@@ -47,12 +47,6 @@ public class AudioPlayerSingleton {
 		return mediaPlayer.isPlaying();
 	}
 
-	public boolean existanceOfMediaplayer() {
-		boolean flag=false;
-		if( mediaPlayer==null) flag=false;
-		else flag=true;
-		return flag;
-	}
 
 	public int currentVolume() {
 
