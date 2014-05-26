@@ -5,6 +5,7 @@ import java.io.IOException;
 import android.widget.SeekBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ public class AudioPlayerActivity extends Activity implements
 	private static final String IS_PLAYING_FLAG = "isPlayingFlag";
 	private SeekBar mSeekBar;
 	TextView mTextValue;
+	private int currentValue;
+	AudioManager mAudioManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +36,13 @@ public class AudioPlayerActivity extends Activity implements
 
 			isPlayingFlag = false;
 			setContentView(R.layout.a_audioplayer);
+			mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+			currentValue = mAudioManager
+					.getStreamVolume(AudioManager.STREAM_MUSIC);
 			mTextValue = (TextView) findViewById(R.id.currentVolume);
 			mSeekBar = (SeekBar) findViewById(R.id.seekBar);
+			mSeekBar.setMax(99);
+			mSeekBar.setProgress(currentValue);
 			mSeekBar.setOnSeekBarChangeListener(this);
 			Button btn = (Button) findViewById(R.id.btnPlay);
 			if (savedInstanceState != null) {
@@ -123,7 +131,13 @@ public class AudioPlayerActivity extends Activity implements
 			boolean fromUser) {
 		// TODO Auto-generated method stub
 		mTextValue.setText(String.valueOf(mSeekBar.getProgress()));
-
+		Singleton s = Singleton.getInstance();
+		if (s.returnMediaplayer() == null) {
+			s.Create();
+		}
+		mediaPlayer = s.returnMediaplayer();
+		s.returnMediaplayer().setVolume(mSeekBar.getProgress(),
+				mSeekBar.getProgress());
 	}
 
 	@Override
@@ -140,8 +154,10 @@ public class AudioPlayerActivity extends Activity implements
 			s.Create();
 		}
 		mediaPlayer = s.returnMediaplayer();
+		currentValue = mSeekBar.getProgress();
 		s.returnMediaplayer().setVolume(mSeekBar.getProgress(),
 				mSeekBar.getProgress());
+		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue, 0);
 
 	}
 
