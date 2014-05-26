@@ -10,5 +10,6 @@
     <string name="play">Play</string>
     <string name="status">Status</string>
     <string name="pause">Pause</string>
+     <string name="currentVolume">It will be current volume</string>
 <string name="music_name">music.mp3 - "Bach-Prelude for unaccompanied cello suite"</string>
 </resources>

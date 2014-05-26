@@ -56,15 +56,7 @@
     android:layout_marginTop="28dp"
     android:text="@string/status" />
 
-<!--  <TextView
-    android:id="@+id/textView3"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/textView2"
-    android:layout_alignBottom="@+id/textView2"
-    android:layout_alignRight="@+id/btnPlay"
-    android:layout_marginRight="18dp"
-    android:text="@string/" />-->
+
 
 <SeekBar
     android:id="@+id/seekBar"
@@ -80,6 +72,6 @@
     android:layout_height="wrap_content"
     android:layout_above="@+id/seekBar"
     android:layout_centerHorizontal="true"
-    android:text="currentVolume" />
+    android:text="@string/currentVolume" />
 
 </RelativeLayout>
