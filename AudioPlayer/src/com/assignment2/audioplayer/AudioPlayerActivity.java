@@ -19,8 +19,8 @@ public class AudioPlayerActivity extends Activity implements
 	private int currentValue;
 	Button btn;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
 		boolean isPlayingFlag = playerIsPlaying();
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_audioplayer);
