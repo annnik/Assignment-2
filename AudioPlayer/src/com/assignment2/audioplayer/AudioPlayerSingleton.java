@@ -18,19 +18,19 @@ public class AudioPlayerSingleton {
 		return SingletonHolder.HOLDER_INSTANCE;
 	}
 
-	public void Create() {
+	public void create() {
 
 		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(),
 				R.raw.music);
 
 	}
 
-	public void Start() {
+	public void start() {
 
 		mediaPlayer.start();
 	}
 
-	public void Stop() {
+	public void stop() {
 
 		mediaPlayer.pause();
 	}
@@ -50,5 +50,11 @@ public class AudioPlayerSingleton {
 		currentValue = mAudioManager
 				.getStreamVolume(AudioManager.STREAM_MUSIC);
 		return currentValue;
+	}
+	public void setVolume(int currentValue)
+	{
+		mAudioManager = (AudioManager) AudioPlayerApplication.getContext().getSystemService(AUDIO_SERVICE);
+		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
+				0);
 	}
 }

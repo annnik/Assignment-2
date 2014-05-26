@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.widget.SeekBar;
 import android.app.Activity;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -14,84 +13,82 @@ import android.widget.TextView;
 public class AudioPlayerActivity extends Activity implements
 		SeekBar.OnSeekBarChangeListener {
 
-	public boolean isPlayingFlag = false;
+	 
 	private boolean firstCreate = true;
 	MediaPlayer mediaPlayer;
 	private static final String IS_PLAYING_FLAG = "isPlayingFlag";
 	private SeekBar mSeekBar;
 	TextView mTextValue;
 	private int currentValue;
-	AudioManager mAudioManager;
 	Button btn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		boolean isPlayingFlag = false;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_audioplayer);
-		
-		     AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
-		     currentValue=s.currentVolume(); 
-			mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-			mTextValue = (TextView) findViewById(R.id.currentVolume);
-			mSeekBar = (SeekBar) findViewById(R.id.seekBar);
-			mSeekBar.setMax(99);
-			mSeekBar.setProgress(currentValue);
-			mSeekBar.setOnSeekBarChangeListener(this);
-			if ((savedInstanceState != null) && (s.returnMediaplayer() != null)) {
 
-				isPlayingFlag = savedInstanceState.getBoolean(IS_PLAYING_FLAG,
-						true);
-				if (isPlayingFlag == true) {
-					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-					textStatusPlaying.setText(R.string.playing);
-					btn = (Button) findViewById(R.id.btnPlay);
-					btn.setText(R.string.pause);
+		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton.getInstance();
+		currentValue = singletonPlayer.currentVolume();
+		mTextValue = (TextView) findViewById(R.id.currentVolume);
+		mSeekBar = (SeekBar) findViewById(R.id.seekBar);
+		mSeekBar.setMax(99);
+		mSeekBar.setProgress(currentValue);
+		mSeekBar.setOnSeekBarChangeListener(this);
+		if ((savedInstanceState != null) && (singletonPlayer.returnMediaplayer() != null)) {
 
-				} else {
-					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-					textStatusPlaying.setText(R.string.paused);
-					btn = (Button) findViewById(R.id.btnPlay);
-					btn.setText(R.string.play);
-				}
+			isPlayingFlag = savedInstanceState
+					.getBoolean(IS_PLAYING_FLAG, true);
+			if (isPlayingFlag == true) {
+				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+				textStatusPlaying.setText(R.string.playing);
+				btn = (Button) findViewById(R.id.btnPlay);
+				btn.setText(R.string.pause);
 
 			} else {
-				if (!isPlayingFlag)  {
+				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+				textStatusPlaying.setText(R.string.paused);
+				btn = (Button) findViewById(R.id.btnPlay);
+				btn.setText(R.string.play);
+			}
 
-					TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
-					textStatusIdle.setText(R.string.idle);
-				}
+		} else {
+			if (!isPlayingFlag) {
 
-			
+				TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
+				textStatusIdle.setText(R.string.idle);
+			}
+
 		}
 
 	}
 
 	public void onClickStart(View view) throws IOException {
-
+		boolean isPlayingFlag = false;
 		switch (view.getId()) {
 		case R.id.btnPlay:
 			Button btn = (Button) findViewById(R.id.btnPlay);
 			if ((!isPlayingFlag) && (firstCreate)) {
-				AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
-				s.Create();
-				s.Start();
+				AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton.getInstance();
+				singletonPlayer.create();
+				singletonPlayer.start();
 				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 				textStatusPlaying.setText(R.string.playing);
 				btn.setText(R.string.pause);
 				isPlayingFlag = true;
 			} else {
 				if (isPlayingFlag) {
-					AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
-					s.Stop();
+					AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton.getInstance();
+					singletonPlayer.stop();
 					btn.setText(R.string.play);
 					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusPlaying.setText(R.string.paused);
 					isPlayingFlag = false;
 				} else {
 					if ((!isPlayingFlag) && (!firstCreate)) {
-						AudioPlayerSingleton s = AudioPlayerSingleton
+						AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 								.getInstance();
-						s.Start();
+						singletonPlayer.start();
 						TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 						textStatusPlaying.setText(R.string.playing);
 						btn.setText(R.string.pause);
@@ -112,9 +109,10 @@ public class AudioPlayerActivity extends Activity implements
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
-		if (s.returnMediaplayer() != null) {
-			if (s.isPlaying()) {
+		boolean isPlayingFlag = false;
+		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton.getInstance();
+		if (singletonPlayer.returnMediaplayer() != null) {
+			if (singletonPlayer.isPlaying()) {
 				isPlayingFlag = true;
 			}
 			outState.putBoolean(IS_PLAYING_FLAG, isPlayingFlag);
@@ -128,8 +126,8 @@ public class AudioPlayerActivity extends Activity implements
 		// TODO Auto-generated method stub
 		mTextValue.setText(String.valueOf(mSeekBar.getProgress()));
 		currentValue = mSeekBar.getProgress();
-		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
-				0);
+		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton.getInstance();
+		singletonPlayer.setVolume(currentValue);
 	}
 
 	@Override
@@ -141,11 +139,9 @@ public class AudioPlayerActivity extends Activity implements
 	@Override
 	public void onStopTrackingTouch(SeekBar mSeekBar) {
 		// TODO Auto-generated method stub
-		
+		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton.getInstance();
 		currentValue = mSeekBar.getProgress();
-		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
-				0);
-
+		singletonPlayer.setVolume(currentValue);
 	}
 
 }
