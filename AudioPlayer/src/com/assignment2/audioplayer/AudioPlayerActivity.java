@@ -29,18 +29,14 @@ public class AudioPlayerActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_audioplayer);
 		
-
-			isPlayingFlag = false;
-
+		     AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
+		     currentValue=s.currentVolume(); 
 			mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-			currentValue = mAudioManager
-					.getStreamVolume(AudioManager.STREAM_MUSIC);
 			mTextValue = (TextView) findViewById(R.id.currentVolume);
 			mSeekBar = (SeekBar) findViewById(R.id.seekBar);
 			mSeekBar.setMax(99);
 			mSeekBar.setProgress(currentValue);
 			mSeekBar.setOnSeekBarChangeListener(this);
-			AudioPlayerSingleton s = AudioPlayerSingleton.getInstance();
 			if ((savedInstanceState != null) && (s.returnMediaplayer() != null)) {
 
 				isPlayingFlag = savedInstanceState.getBoolean(IS_PLAYING_FLAG,
@@ -90,7 +86,6 @@ public class AudioPlayerActivity extends Activity implements
 					btn.setText(R.string.play);
 					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusPlaying.setText(R.string.paused);
-
 					isPlayingFlag = false;
 				} else {
 					if ((!isPlayingFlag) && (!firstCreate)) {
@@ -146,6 +141,7 @@ public class AudioPlayerActivity extends Activity implements
 	@Override
 	public void onStopTrackingTouch(SeekBar mSeekBar) {
 		// TODO Auto-generated method stub
+		
 		currentValue = mSeekBar.getProgress();
 		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
 				0);

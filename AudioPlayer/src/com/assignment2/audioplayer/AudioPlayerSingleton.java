@@ -1,11 +1,13 @@
 package com.assignment2.audioplayer;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 public class AudioPlayerSingleton {
 	MediaPlayer mediaPlayer;
-	
-
+	int currentValue;
+	AudioManager mAudioManager;
+	private static final String AUDIO_SERVICE="audio"; 
 	public static class SingletonHolder {
 		public static final AudioPlayerSingleton HOLDER_INSTANCE = new AudioPlayerSingleton();
 
@@ -16,11 +18,10 @@ public class AudioPlayerSingleton {
 		return SingletonHolder.HOLDER_INSTANCE;
 	}
 
-	
-
 	public void Create() {
 
-		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(), R.raw.music);
+		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(),
+				R.raw.music);
 
 	}
 
@@ -43,4 +44,11 @@ public class AudioPlayerSingleton {
 		return mediaPlayer;
 	}
 
+	public int currentVolume() {
+		
+		mAudioManager = (AudioManager) AudioPlayerApplication.getContext().getSystemService(AUDIO_SERVICE);
+		currentValue = mAudioManager
+				.getStreamVolume(AudioManager.STREAM_MUSIC);
+		return currentValue;
+	}
 }
