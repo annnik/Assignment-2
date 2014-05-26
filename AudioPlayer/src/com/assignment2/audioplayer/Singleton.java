@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.TextView;
+
 //RENAME THIS CLASS TO AudioPlayer
 public class Singleton {
 	MediaPlayer mediaPlayer;
@@ -15,10 +16,9 @@ public class Singleton {
 	}
 
 	public static Singleton getInstance() {
-		
+
 		return SingletonHolder.HOLDER_INSTANCE;
 	}
-
 
 	private void releaseMP() {
 		if (mediaPlayer != null) {
@@ -31,15 +31,25 @@ public class Singleton {
 		}
 	}
 
-	public MediaPlayer Create() {
+	public void Create() {
 
-		return mediaPlayer=MediaPlayer.create(app.getContext(), R.raw.music);
+		mediaPlayer = MediaPlayer.create(app.getContext(), R.raw.music);
 
+	}
+
+	public void Start() {
+
+		mediaPlayer.start();
 	}
 
 	public void Stop() {
 
 		mediaPlayer.pause();
+	}
+
+	public boolean isPlaying() {
+
+		return mediaPlayer.isPlaying();
 	}
 
 }

@@ -20,33 +20,40 @@ public class AudioPlayerActivity extends Activity {
 
 	public boolean isPlayingFlag = false;
 	public boolean isFirstPlayingFlag = false;
-	private boolean turningFlag = false;
-	private boolean firstCreate = false;
+	private boolean turningFlagIsPlaying = false;
+	private boolean firstCreate = true;
 	MediaPlayer mediaPlayer;
 	private static final String TURNING_FLAG = "turningFlag";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (!firstCreate) {
-			firstCreate=true;
+		if (firstCreate) {
+
 			isPlayingFlag = false;
 			setContentView(R.layout.a_audioplayer);
+			Button btn = (Button) findViewById(R.id.btnPlay);
 			if (savedInstanceState != null) {
-				turningFlag = savedInstanceState.getBoolean(TURNING_FLAG, true);
-				if (turningFlag == false) {
+				turningFlagIsPlaying = savedInstanceState.getBoolean(
+						TURNING_FLAG, true);
+				if (turningFlagIsPlaying == true) {
 					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusPlaying.setText(R.string.playing);
-					turningFlag = true;
-				}
 
+					btn.setText(R.string.pause);
+
+				} else {
+					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+					textStatusPlaying.setText(R.string.paused);
+					btn.setText(R.string.play);
+				}
 			} else {
-				if ((!isPlayingFlag) && (!isFirstPlayingFlag)) {
+				if ((!turningFlagIsPlaying) && (!isFirstPlayingFlag)) {
 
 					TextView textStatusIdle = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusIdle.setText(R.string.idle);
 				}
-				turningFlag = false;
+
 			}
 		}
 
@@ -55,57 +62,40 @@ public class AudioPlayerActivity extends Activity {
 	public void onClickStart(View view) throws IOException {
 
 		switch (view.getId()) {
-		// manyetsya na play pri povorote
 		case R.id.btnPlay:
-			if ((!isPlayingFlag) && (!isFirstPlayingFlag) && (!turningFlag)) {
+			Button btn = (Button) findViewById(R.id.btnPlay);
+			if ((!turningFlagIsPlaying) && (firstCreate)) {
 				Singleton s = Singleton.getInstance();
-				mediaPlayer = s.Create();
-				mediaPlayer.start();
+				s.Create();
+				s.Start();
 				TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 				textStatusPlaying.setText(R.string.playing);
-				Button btn = (Button) findViewById(R.id.btnPlay);
-
 				btn.setText(R.string.pause);
-				isPlayingFlag = true;
-				isFirstPlayingFlag = true;
+				turningFlagIsPlaying = true;
 			} else {
-				if ((isPlayingFlag) && (isFirstPlayingFlag)) {
-					mediaPlayer.pause();
-					Button btn = (Button) findViewById(R.id.btnPlay);
-					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-					textStatusPlaying.setText(R.string.paused);
-					btn.setText(R.string.play);
-					isPlayingFlag = false;
-				} else if ((!isPlayingFlag) && (isFirstPlayingFlag)) {
-					mediaPlayer.start();
-					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-					textStatusPlaying.setText(R.string.playing);
-					Button btn = (Button) findViewById(R.id.btnPlay);
-
-					btn.setText(R.string.pause);
-					isPlayingFlag = true;
-
-				} else if ((!isPlayingFlag) && (!isFirstPlayingFlag)
-						&& (turningFlag)) {
+				if (turningFlagIsPlaying) {
 					Singleton s = Singleton.getInstance();
-					mediaPlayer = s.Create();
-					mediaPlayer.start();
-					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-					textStatusPlaying.setText(R.string.playing);
-					Button btn = (Button) findViewById(R.id.btnPlay);
-
-					btn.setText(R.string.pause);
-					isPlayingFlag = true;
-				} else if ((isPlayingFlag) && (!isFirstPlayingFlag)
-						&& (turningFlag)) {
-					mediaPlayer.pause();
-					Button btn = (Button) findViewById(R.id.btnPlay);
+					s.Stop();
+					btn.setText(R.string.play);
 					TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 					textStatusPlaying.setText(R.string.paused);
-					btn.setText(R.string.play);
-					isPlayingFlag = false;
+
+					turningFlagIsPlaying = false;
+				} else {
+					if ((!turningFlagIsPlaying) && (!firstCreate)) {
+						Singleton s = Singleton.getInstance();
+
+						s.Start();
+						TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+						textStatusPlaying.setText(R.string.playing);
+						btn.setText(R.string.pause);
+						turningFlagIsPlaying = true;
+					}
 				}
+
 			}
+
+			firstCreate = false;
 			break;
 
 		}
@@ -116,8 +106,11 @@ public class AudioPlayerActivity extends Activity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-
-		outState.putBoolean(TURNING_FLAG, turningFlag);
+		Singleton s = Singleton.getInstance();
+		if (s.isPlaying()) {
+			turningFlagIsPlaying = true;
+		}
+		outState.putBoolean(TURNING_FLAG, turningFlagIsPlaying);
 
 		super.onSaveInstanceState(outState);
 	}
