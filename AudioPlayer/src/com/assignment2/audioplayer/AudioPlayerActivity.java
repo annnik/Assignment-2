@@ -13,121 +13,133 @@ import android.widget.TextView;
 public class AudioPlayerActivity extends Activity implements
 		SeekBar.OnSeekBarChangeListener {
 
-	MediaPlayer mediaPlayer;
-	private SeekBar mSeekBar;
-	TextView mTextValue;
-	private int currentValue;
-	Button btn;
+	private MediaPlayer mediaPlayer;
+	private SeekBar seekBarVolume;
+	private TextView currentVolumeNumber;
+	private Button buttonPlay;
+	private TextView textStatusPlaying;
 
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
-		boolean isPlayingFlag = playerIsPlaying();
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
+		int currentValue;
+		boolean isPlayingFlag = playerIsPlaying();
 		setContentView(R.layout.a_audioplayer);
-		TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 		textStatusPlaying.setText(R.string.idle);
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
 		currentValue = singletonPlayer.currentVolume();
-		mTextValue = (TextView) findViewById(R.id.currentVolume);
-		mSeekBar = (SeekBar) findViewById(R.id.seekBar);
-		mSeekBar.setMax(99);
-		mSeekBar.setProgress(currentValue);
-		mSeekBar.setOnSeekBarChangeListener(this);
-		
-		
-			if (isPlayingFlag == true) {
-				textStatusPlaying.setText(R.string.playing);
-				btn = (Button) findViewById(R.id.btnPlay);
-				btn.setText(R.string.pause);
+		currentVolumeNumber = (TextView) findViewById(R.id.currentVolumeNumber);
+		seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
+		seekBarVolume.setMax(99);
+		seekBarVolume.setProgress(currentValue);
+		seekBarVolume.setOnSeekBarChangeListener(this);
+		if (isPlayingFlag == true) {
 
-			} else {
-				
-				btn = (Button) findViewById(R.id.btnPlay);
-				btn.setText(R.string.play);
-			}
+			textStatusPlaying.setText(R.string.playing);
+			buttonPlay = (Button) findViewById(R.id.btnPlay);
+			buttonPlay.setText(R.string.pause);
+		} else {
 
+			buttonPlay = (Button) findViewById(R.id.btnPlay);
+			buttonPlay.setText(R.string.play);
+		}
+	}
 
+	private void updateUI() {
+
+		boolean isPlayingFlag = playerIsPlaying();
+		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+		if (!isPlayingFlag) {
+
+			textStatusPlaying.setText(R.string.paused);
+			buttonPlay = (Button) findViewById(R.id.btnPlay);
+			buttonPlay.setText(R.string.play);
+		} else {
+
+			textStatusPlaying.setText(R.string.playing);
+			buttonPlay = (Button) findViewById(R.id.btnPlay);
+			buttonPlay.setText(R.string.pause);
+		}
 	}
 
 	private void playerStart() {
+
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
 		singletonPlayer.start();
-		TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-		textStatusPlaying.setText(R.string.playing);
-		btn = (Button) findViewById(R.id.btnPlay);
-		btn.setText(R.string.pause);
+		updateUI();
 	}
 
 	private void playerPause() {
+
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
 		singletonPlayer.stop();
-
-		TextView textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-		textStatusPlaying.setText(R.string.paused);
-		btn = (Button) findViewById(R.id.btnPlay);
-		btn.setText(R.string.play);
+		updateUI();
 	}
 
 	public void onClickStart(View view) throws IOException {
-		boolean isPlayingFlag = playerIsPlaying();
 
+		boolean isPlayingFlag = playerIsPlaying();
 		switch (view.getId()) {
 		case R.id.btnPlay:
 			if (!isPlayingFlag) {
-				playerStart();
 
+				playerStart();
 				isPlayingFlag = true;
 			} else {
+
 				playerPause();
 				isPlayingFlag = false;
-
 			}
 			break;
 
 		}
-		if (mediaPlayer == null)
+		if (mediaPlayer == null) {
 			return;
-
+		}
 	}
 
 	public boolean playerIsPlaying() {
+
 		boolean isPlayingFlag = false;
 		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
-			if (singletonPlayer.isPlaying()) {
-				isPlayingFlag = true;
-			}
+		if (singletonPlayer.isPlaying()) {
+
+			isPlayingFlag = true;
+		}
 		return isPlayingFlag;
 	}
 
-	
+	private void updateVolumeLabel() {
+
+		int currentValue;
+		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
+				.getInstance();
+		currentValue = seekBarVolume.getProgress();
+		singletonPlayer.setVolume(currentValue);
+	}
+
 	@Override
 	public void onProgressChanged(SeekBar mSeekBar, int progress,
 			boolean fromUser) {
-		// TODO Auto-generated method stub
-		mTextValue.setText(String.valueOf(mSeekBar.getProgress()));
-		currentValue = mSeekBar.getProgress();
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		singletonPlayer.setVolume(currentValue);
+
+		currentVolumeNumber.setText(String.valueOf(mSeekBar.getProgress()));
+		updateVolumeLabel();
+
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar mSeekBar) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar mSeekBar) {
-		// TODO Auto-generated method stub
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		currentValue = mSeekBar.getProgress();
-		singletonPlayer.setVolume(currentValue);
+		updateVolumeLabel();
 	}
 
 }

@@ -5,9 +5,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 public class AudioPlayerSingleton {
-	MediaPlayer mediaPlayer;
-	int currentValue;
-	AudioManager mAudioManager;
+	private MediaPlayer mediaPlayer;
+	private AudioManager audioManager;
 
 	public static class SingletonHolder {
 		public static final AudioPlayerSingleton HOLDER_INSTANCE = new AudioPlayerSingleton();
@@ -15,7 +14,6 @@ public class AudioPlayerSingleton {
 	}
 
 	public static AudioPlayerSingleton getInstance() {
-
 		return SingletonHolder.HOLDER_INSTANCE;
 	}
 
@@ -25,39 +23,32 @@ public class AudioPlayerSingleton {
 
 	private void create() {
 		AudioPlayerApplication.getContext();
-		mAudioManager = (AudioManager) AudioPlayerApplication.getContext()
+		audioManager = (AudioManager) AudioPlayerApplication.getContext()
 				.getSystemService(Context.AUDIO_SERVICE);
 		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(),
 				R.raw.music);
-
 	}
 
 	public void start() {
-
 		mediaPlayer.start();
 	}
 
 	public void stop() {
-
 		mediaPlayer.pause();
 	}
 
 	public boolean isPlaying() {
-
 		return mediaPlayer.isPlaying();
 	}
 
-
 	public int currentVolume() {
-
-		
-		currentValue = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+		int currentValue;
+		currentValue = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 		return currentValue;
 	}
 
 	public void setVolume(int currentValue) {
-		
-		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue,
-				0);
+		audioManager
+				.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue, 0);
 	}
 }

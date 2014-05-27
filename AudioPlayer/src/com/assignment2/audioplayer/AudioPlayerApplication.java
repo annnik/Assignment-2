@@ -6,8 +6,7 @@ public class AudioPlayerApplication extends android.app.Application{
 	private static AudioPlayerApplication instance;
 
 	public AudioPlayerApplication() {
-		instance = this;
-		
+		instance = this;		
 	}
 
 	public static Context getContext() {
