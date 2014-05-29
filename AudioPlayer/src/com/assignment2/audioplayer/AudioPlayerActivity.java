@@ -4,8 +4,16 @@ import java.io.IOException;
 
 import android.widget.SeekBar;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,46 +21,99 @@ import android.widget.TextView;
 public class AudioPlayerActivity extends Activity implements
 		SeekBar.OnSeekBarChangeListener {
 
+	public final static String BROADCAST_ACTION = "com.assignment2.audioplayer";
+	public final static String PARAM_TIME = "time";
+	public final static String PARAM_TASK = "task";
+	public final static String PARAM_RESULT = "result";
+	public final static String PARAM_STATUS = "status";
+	public final static int STATUS_START = 100;
+	public final static int STATUS_FINISH = 200;
 	private MediaPlayer mediaPlayer;
 	private SeekBar seekBarVolume;
 	private TextView currentVolumeNumber;
 	private Button buttonPlay;
 	private TextView textStatusPlaying;
+	private BroadcastReceiver broadcastReceiver;
+	private Intent playerServiceIntent;
+	private ServiceConnection serviceConnection;
+	private boolean isPlayingFlag;
+	private int currentValue;
+	private AudioPlayerService.PlayerCustomBinder playerServicebinder;
+
+	public static final String PLAYER_ID = "AUDIOPLAYER_ID";
+
+	public void registerBroadcastReceivers() {
+
+		broadcastReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				switch (intent.getIntExtra(PLAYER_ID, 0)) {
+				case R.string.idle:
+
+					buttonPlay.setText(R.string.play);
+					textStatusPlaying.setText(R.string.idle);
+					isPlayingFlag = false;
+					break;
+				}
+			}
+		};
+		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
+		registerReceiver(broadcastReceiver, progressfilter);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
+		AudioManager audioManager;
 		super.onCreate(savedInstanceState);
-		int currentValue;
-		boolean isPlayingFlag = playerIsPlaying();
+		
+		registerBroadcastReceivers();
+		playerServiceIntent = new Intent(this, AudioPlayerService.class);
+		serviceConnection = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder binder) {
+
+				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
+				isPlayingFlag = ((AudioPlayerService.PlayerCustomBinder) binder)
+						.getService().isPlaying();
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+			}
+		};
+
+		buttonPlay = (Button) findViewById(R.id.btnPlay);
+		audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 		setContentView(R.layout.a_audioplayer);
 		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 		textStatusPlaying.setText(R.string.idle);
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
+		startService(new Intent(this, AudioPlayerService.class));
+		bindService(playerServiceIntent, serviceConnection, BIND_AUTO_CREATE);
+
+		if ((savedInstanceState != null) && (isPlayingFlag)) {
+			buttonPlay = (Button) findViewById(R.id.btnPlay);
+			buttonPlay.setText(R.string.play);
+		} else if ((savedInstanceState != null) && (!isPlayingFlag)) {
+			buttonPlay = (Button) findViewById(R.id.btnPlay);
+			buttonPlay.setText(R.string.pause);
+		}
+
+		/*AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
 				.getInstance();
-		currentValue = singletonPlayer.currentVolume();
+		currentValue = singletonPlayer.currentVolume();*/
+		currentValue=volumeLevel();
 		currentVolumeNumber = (TextView) findViewById(R.id.currentVolumeNumber);
 		seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
 		seekBarVolume.setMax(99);
 		seekBarVolume.setProgress(currentValue);
 		seekBarVolume.setOnSeekBarChangeListener(this);
-		if (isPlayingFlag == true) {
 
-			textStatusPlaying.setText(R.string.playing);
-			buttonPlay = (Button) findViewById(R.id.btnPlay);
-			buttonPlay.setText(R.string.pause);
-		} else {
-
-			buttonPlay = (Button) findViewById(R.id.btnPlay);
-			buttonPlay.setText(R.string.play);
-		}
 	}
 
 	private void updateUI() {
 
-		boolean isPlayingFlag = playerIsPlaying();
 		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-		if (!isPlayingFlag) {
+		if (isPlayingFlag) {
 
 			textStatusPlaying.setText(R.string.paused);
 			buttonPlay = (Button) findViewById(R.id.btnPlay);
@@ -66,28 +127,20 @@ public class AudioPlayerActivity extends Activity implements
 	}
 
 	private void playerStart() {
-
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		singletonPlayer.start();
+		playerServicebinder.getService().start();
 		updateUI();
 	}
 
 	private void playerPause() {
-
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		singletonPlayer.stop();
+		playerServicebinder.getService().stop();
 		updateUI();
 	}
 
 	public void onClickStart(View view) throws IOException {
 
-		boolean isPlayingFlag = playerIsPlaying();
 		switch (view.getId()) {
 		case R.id.btnPlay:
 			if (!isPlayingFlag) {
-
 				playerStart();
 				isPlayingFlag = true;
 			} else {
@@ -105,40 +158,78 @@ public class AudioPlayerActivity extends Activity implements
 
 	public boolean playerIsPlaying() {
 
-		boolean isPlayingFlag = false;
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		if (singletonPlayer.isPlaying()) {
+		playerServiceIntent = new Intent(this, AudioPlayerService.class);
+		serviceConnection = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder binder) {
+				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
+				isPlayingFlag = ((AudioPlayerService.PlayerCustomBinder) binder)
+						.getService().isPlaying();
+			}
 
-			isPlayingFlag = true;
-		}
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+			}
+		};
+
 		return isPlayingFlag;
 	}
 
 	private void updateVolumeLabel() {
 
-		int currentValue;
-		AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
 		currentValue = seekBarVolume.getProgress();
-		singletonPlayer.setVolume(currentValue);
+
+		playerServiceIntent = new Intent(this, AudioPlayerService.class);
+		serviceConnection = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder binder) {
+				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
+				currentValue=volumeLevel();
+				((AudioPlayerService.PlayerCustomBinder) binder).getService()
+						.setVolume(currentValue);
+
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+			}
+		};
+
+	}
+
+	private int volumeLevel() {
+		
+		playerServiceIntent = new Intent(this, AudioPlayerService.class);
+		serviceConnection = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder binder) {
+				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
+				currentValue = ((AudioPlayerService.PlayerCustomBinder) binder)
+						.getService().currentVolume();
+							}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+			}
+		};
+		return currentValue;
 	}
 
 	@Override
-	public void onProgressChanged(SeekBar mSeekBar, int progress,
+	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 
-		currentVolumeNumber.setText(String.valueOf(mSeekBar.getProgress()));
+		currentVolumeNumber.setText(String.valueOf(seekBar.getProgress()));
 		updateVolumeLabel();
 
 	}
 
 	@Override
-	public void onStartTrackingTouch(SeekBar mSeekBar) {
+	public void onStartTrackingTouch(SeekBar seekBar) {
 	}
 
 	@Override
-	public void onStopTrackingTouch(SeekBar mSeekBar) {
+	public void onStopTrackingTouch(SeekBar seekBar) {
 		updateVolumeLabel();
 	}
 
