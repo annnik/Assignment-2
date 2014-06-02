@@ -38,6 +38,7 @@ public class AudioPlayerActivity extends Activity implements
 	private ServiceConnection serviceConnection;
 	private boolean isPlayingFlag;
 	private int currentValue;
+	private AudioManager audioManager;
 	private AudioPlayerService.PlayerCustomBinder playerServicebinder;
 
 	public static final String PLAYER_ID = "AUDIOPLAYER_ID";
@@ -63,15 +64,13 @@ public class AudioPlayerActivity extends Activity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		AudioManager audioManager;
+
 		super.onCreate(savedInstanceState);
-		
 		registerBroadcastReceivers();
 		playerServiceIntent = new Intent(this, AudioPlayerService.class);
 		serviceConnection = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder binder) {
-
 				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
 				isPlayingFlag = ((AudioPlayerService.PlayerCustomBinder) binder)
 						.getService().isPlaying();
@@ -81,15 +80,15 @@ public class AudioPlayerActivity extends Activity implements
 			public void onServiceDisconnected(ComponentName name) {
 			}
 		};
-
 		buttonPlay = (Button) findViewById(R.id.btnPlay);
 		audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 		setContentView(R.layout.a_audioplayer);
 		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 		textStatusPlaying.setText(R.string.idle);
-		startService(new Intent(this, AudioPlayerService.class));
+		if (savedInstanceState == null) {
+			startService(new Intent(this, AudioPlayerService.class));
+		}
 		bindService(playerServiceIntent, serviceConnection, BIND_AUTO_CREATE);
-
 		if ((savedInstanceState != null) && (isPlayingFlag)) {
 			buttonPlay = (Button) findViewById(R.id.btnPlay);
 			buttonPlay.setText(R.string.play);
@@ -98,10 +97,6 @@ public class AudioPlayerActivity extends Activity implements
 			buttonPlay.setText(R.string.pause);
 		}
 
-		/*AudioPlayerSingleton singletonPlayer = AudioPlayerSingleton
-				.getInstance();
-		currentValue = singletonPlayer.currentVolume();*/
-		currentValue=volumeLevel();
 		currentVolumeNumber = (TextView) findViewById(R.id.currentVolumeNumber);
 		seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
 		seekBarVolume.setMax(99);
@@ -144,12 +139,10 @@ public class AudioPlayerActivity extends Activity implements
 				playerStart();
 				isPlayingFlag = true;
 			} else {
-
 				playerPause();
 				isPlayingFlag = false;
 			}
 			break;
-
 		}
 		if (mediaPlayer == null) {
 			return;
@@ -171,48 +164,13 @@ public class AudioPlayerActivity extends Activity implements
 			public void onServiceDisconnected(ComponentName name) {
 			}
 		};
-
 		return isPlayingFlag;
 	}
 
 	private void updateVolumeLabel() {
-
 		currentValue = seekBarVolume.getProgress();
-
-		playerServiceIntent = new Intent(this, AudioPlayerService.class);
-		serviceConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder binder) {
-				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
-				currentValue=volumeLevel();
-				((AudioPlayerService.PlayerCustomBinder) binder).getService()
-						.setVolume(currentValue);
-
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-			}
-		};
-
-	}
-
-	private int volumeLevel() {
-		
-		playerServiceIntent = new Intent(this, AudioPlayerService.class);
-		serviceConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder binder) {
-				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
-				currentValue = ((AudioPlayerService.PlayerCustomBinder) binder)
-						.getService().currentVolume();
-							}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-			}
-		};
-		return currentValue;
+		audioManager
+				.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue, 0);
 	}
 
 	@Override
@@ -222,6 +180,13 @@ public class AudioPlayerActivity extends Activity implements
 		currentVolumeNumber.setText(String.valueOf(seekBar.getProgress()));
 		updateVolumeLabel();
 
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unbindService(serviceConnection);
+		unregisterReceiver(broadcastReceiver);
 	}
 
 	@Override
