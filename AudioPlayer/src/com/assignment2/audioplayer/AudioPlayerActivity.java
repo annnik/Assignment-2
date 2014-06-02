@@ -122,7 +122,7 @@ public class AudioPlayerActivity extends Activity implements
 	}
 
 	private void playerStart() {
-		playerServicebinder.getService().start();
+	    playerServicebinder.getService().start();
 		updateUI();
 	}
 
@@ -169,8 +169,8 @@ public class AudioPlayerActivity extends Activity implements
 
 	private void updateVolume() {
 		currentValue = seekBarVolume.getProgress();
-		audioManager
-				.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue, 0);
+		playerServicebinder.getService().setVolume(currentValue);
+
 	}
 
 	@Override
