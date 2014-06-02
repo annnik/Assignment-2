@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -19,11 +20,24 @@ public class AudioPlayerService extends Service {
 	boolean isPlayingFlag = false;
 	BroadcastReceiver broadcastReceiver;
 	public static final String PLAYER_ID = "AUDIOPLAYER_ID";
-	public final static String START_PLAYER_ACTION = "start";
-	public final static String STOP_PLAYER_ACTION = "stop";
+	public final static String START_PLAYER_ACTION = "play";
+	public final static String STOP_PLAYER_ACTION = "pause";
 
 	public void onCreate() {
 		super.onCreate();
+		broadcastReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				
+				if (intent.getAction() == START_PLAYER_ACTION) {
+					start();
+				} else if (intent.getAction() == STOP_PLAYER_ACTION) {
+					stop();
+				}
+			}
+		};
+		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
+		registerReceiver(broadcastReceiver, progressfilter);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(
 				this);
 		PendingIntent contentIntent = PendingIntent.getActivity(
@@ -39,19 +53,7 @@ public class AudioPlayerService extends Service {
 
 		startForeground(1313, notification);
 
-		broadcastReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				switch (intent.getIntExtra(START_PLAYER_ACTION, 0)) {
-				case R.string.play:
-					mediaPlayer.start();
-					break;
-				case R.string.pause:
-					mediaPlayer.stop();
-					break;
-				}
-			}
-		};
+		
 	}
 
 	public void onDestroy() {
@@ -82,6 +84,7 @@ public class AudioPlayerService extends Service {
 	}
 
 	class PlayerCustomBinder extends Binder {
+		
 		AudioPlayerService getService() {
 			return AudioPlayerService.this;
 		}
@@ -95,7 +98,7 @@ public class AudioPlayerService extends Service {
 	PlayerCustomBinder binder = new PlayerCustomBinder();
 
 	@Override
-	public IBinder onBind(Intent arg0) {
+	public IBinder onBind(Intent arg0) {		
 		return binder;
 	}
 

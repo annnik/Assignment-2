@@ -125,22 +125,15 @@ public class AudioPlayerActivity extends Activity implements
 
 	private void playerStart() {	
 		
-		
-		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);
+		//playerServicebinder.getService().start();
 		playerServiceIntent.setAction(START_PLAYER_ACTION);
-		playerServiceIntent.putExtra(START_PLAYER_ACTION, 1);
-		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
-		registerReceiver(broadcastReceiver, progressfilter);
 		sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
 
 	private void playerPause() {
-		// playerServicebinder.getService().stop();
-		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);
-		playerServiceIntent.putExtra(STOP_PLAYER_ACTION, 2);
-		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
-		registerReceiver(broadcastReceiver, progressfilter);
+		
+		playerServiceIntent.setAction(STOP_PLAYER_ACTION);
 		sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
