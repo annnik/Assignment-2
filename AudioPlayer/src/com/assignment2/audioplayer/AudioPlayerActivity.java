@@ -167,7 +167,7 @@ public class AudioPlayerActivity extends Activity implements
 		return isPlayingFlag;
 	}
 
-	private void updateVolumeLabel() {
+	private void updateVolume() {
 		currentValue = seekBarVolume.getProgress();
 		audioManager
 				.setStreamVolume(AudioManager.STREAM_MUSIC, currentValue, 0);
@@ -178,7 +178,7 @@ public class AudioPlayerActivity extends Activity implements
 			boolean fromUser) {
 
 		currentVolumeNumber.setText(String.valueOf(seekBar.getProgress()));
-		updateVolumeLabel();
+		updateVolume();
 
 	}
 
@@ -195,7 +195,7 @@ public class AudioPlayerActivity extends Activity implements
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		updateVolumeLabel();
+		updateVolume();
 	}
 
 }
