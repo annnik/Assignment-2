@@ -28,6 +28,8 @@ public class AudioPlayerActivity extends Activity implements
 	public final static String PARAM_STATUS = "status";
 	public final static int STATUS_START = 100;
 	public final static int STATUS_FINISH = 200;
+	public final static String START_PLAYER_ACTION = "play";
+	public final static String STOP_PLAYER_ACTION = "pause";
 	private MediaPlayer mediaPlayer;
 	private SeekBar seekBarVolume;
 	private TextView currentVolumeNumber;
@@ -121,13 +123,25 @@ public class AudioPlayerActivity extends Activity implements
 		}
 	}
 
-	private void playerStart() {
-	    playerServicebinder.getService().start();
+	private void playerStart() {	
+		
+		
+		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);
+		playerServiceIntent.setAction(START_PLAYER_ACTION);
+		playerServiceIntent.putExtra(START_PLAYER_ACTION, 1);
+		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
+		registerReceiver(broadcastReceiver, progressfilter);
+		sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
 
 	private void playerPause() {
-		playerServicebinder.getService().stop();
+		// playerServicebinder.getService().stop();
+		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);
+		playerServiceIntent.putExtra(STOP_PLAYER_ACTION, 2);
+		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
+		registerReceiver(broadcastReceiver, progressfilter);
+		sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
 
