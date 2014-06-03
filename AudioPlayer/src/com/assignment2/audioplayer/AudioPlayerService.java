@@ -25,10 +25,11 @@ public class AudioPlayerService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+
 		broadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				
+
 				if (intent.getAction() == START_PLAYER_ACTION) {
 					start();
 				} else if (intent.getAction() == STOP_PLAYER_ACTION) {
@@ -36,8 +37,10 @@ public class AudioPlayerService extends Service {
 				}
 			}
 		};
-		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
-		registerReceiver(broadcastReceiver, progressfilter);
+		IntentFilter startfilter = new IntentFilter(START_PLAYER_ACTION);
+		registerReceiver(broadcastReceiver, startfilter);
+		IntentFilter stopfilter = new IntentFilter(STOP_PLAYER_ACTION);
+		registerReceiver(broadcastReceiver, stopfilter);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(
 				this);
 		PendingIntent contentIntent = PendingIntent.getActivity(
@@ -53,7 +56,6 @@ public class AudioPlayerService extends Service {
 
 		startForeground(1313, notification);
 
-		
 	}
 
 	public void onDestroy() {
@@ -84,7 +86,7 @@ public class AudioPlayerService extends Service {
 	}
 
 	class PlayerCustomBinder extends Binder {
-		
+
 		AudioPlayerService getService() {
 			return AudioPlayerService.this;
 		}
@@ -98,7 +100,7 @@ public class AudioPlayerService extends Service {
 	PlayerCustomBinder binder = new PlayerCustomBinder();
 
 	@Override
-	public IBinder onBind(Intent arg0) {		
+	public IBinder onBind(Intent arg0) {
 		return binder;
 	}
 

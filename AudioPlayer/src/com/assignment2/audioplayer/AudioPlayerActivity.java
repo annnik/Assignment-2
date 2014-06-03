@@ -35,8 +35,7 @@ public class AudioPlayerActivity extends Activity implements
 	private TextView currentVolumeNumber;
 	private Button buttonPlay;
 	private TextView textStatusPlaying;
-	private BroadcastReceiver broadcastReceiver;
-	private Intent playerServiceIntent;
+	private BroadcastReceiver broadcastReceiver;	
 	private ServiceConnection serviceConnection;
 	private boolean isPlayingFlag;
 	private int currentValue;
@@ -66,7 +65,7 @@ public class AudioPlayerActivity extends Activity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
+		Intent playerServiceIntent;
 		super.onCreate(savedInstanceState);
 		registerBroadcastReceivers();
 		playerServiceIntent = new Intent(this, AudioPlayerService.class);
@@ -126,13 +125,14 @@ public class AudioPlayerActivity extends Activity implements
 	private void playerStart() {	
 		
 		//playerServicebinder.getService().start();
+		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);;
 		playerServiceIntent.setAction(START_PLAYER_ACTION);
 		sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
 
 	private void playerPause() {
-		
+		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);;
 		playerServiceIntent.setAction(STOP_PLAYER_ACTION);
 		sendBroadcast(playerServiceIntent);
 		updateUI();
@@ -158,7 +158,6 @@ public class AudioPlayerActivity extends Activity implements
 
 	public boolean playerIsPlaying() {
 
-		playerServiceIntent = new Intent(this, AudioPlayerService.class);
 		serviceConnection = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder binder) {
