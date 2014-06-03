@@ -34,10 +34,10 @@ public class AudioPlayerService extends Service {
 				}
 			}
 		};
-		IntentFilter startfilter = new IntentFilter(START_PLAYER_ACTION);
-		registerReceiver(broadcastReceiver, startfilter);
-		IntentFilter stopfilter = new IntentFilter(STOP_PLAYER_ACTION);
-		registerReceiver(broadcastReceiver, stopfilter);
+		IntentFilter startStopFilter = new IntentFilter();
+		startStopFilter.addAction(START_PLAYER_ACTION);
+		startStopFilter.addAction(STOP_PLAYER_ACTION);
+		registerReceiver(broadcastReceiver, startStopFilter);
 	}
 
 	public void onCreate() {
@@ -62,6 +62,7 @@ public class AudioPlayerService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		mediaPlayer.release();
+		unregisterReceiver(broadcastReceiver);
 	}
 
 	public int currentVolume() {
