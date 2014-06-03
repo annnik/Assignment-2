@@ -17,33 +17,31 @@ public class AudioPlayerService extends Service {
 
 	private MediaPlayer mediaPlayer;
 	private AudioManager audioManager;
-	private BroadcastReceiver broadcastReceiver;
-	boolean isPlayingFlag = false;
-	public static final String PLAYER_ID = "AUDIOPLAYER_ID";
-	public final static String START_PLAYER_ACTION = "play";
-	public final static String STOP_PLAYER_ACTION = "pause";
+	private BroadcastReceiver broadcastStartStopReceiver;
+	public final static String ACTION_START_PLAYER = "play";
+	public final static String ACTION_STOP_PLAYER = "pause";
 
-	public void registerBroadcastReceivers() {
-		broadcastReceiver = new BroadcastReceiver() {
+	public void registerBroadcastReceiver() {
+		broadcastStartStopReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				if (intent.getAction().equals(START_PLAYER_ACTION)) {
+				if (intent.getAction().equals(ACTION_START_PLAYER)) {
 					start();
-				} else if (intent.getAction().equals(STOP_PLAYER_ACTION)) {
+				} else if (intent.getAction().equals(ACTION_STOP_PLAYER)) {
 					stop();
 				}
 			}
 		};
 		IntentFilter startStopFilter = new IntentFilter();
-		startStopFilter.addAction(START_PLAYER_ACTION);
-		startStopFilter.addAction(STOP_PLAYER_ACTION);
-		registerReceiver(broadcastReceiver, startStopFilter);
+		startStopFilter.addAction(ACTION_START_PLAYER);
+		startStopFilter.addAction(ACTION_STOP_PLAYER);
+		registerReceiver(broadcastStartStopReceiver, startStopFilter);
 	}
 
 	public void onCreate() {
 
 		super.onCreate();
-		registerBroadcastReceivers();
+		registerBroadcastReceiver();
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(
 				this);
 		PendingIntent contentIntent = PendingIntent.getActivity(
@@ -56,13 +54,13 @@ public class AudioPlayerService extends Service {
 				.getSystemService(Context.AUDIO_SERVICE);
 		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(),
 				R.raw.music);
-		startForeground(1313, notification);
+		startForeground(1000, notification);
 	}
 
 	public void onDestroy() {
 		super.onDestroy();
 		mediaPlayer.release();
-		unregisterReceiver(broadcastReceiver);
+		unregisterReceiver(broadcastStartStopReceiver);
 	}
 
 	public int currentVolume() {

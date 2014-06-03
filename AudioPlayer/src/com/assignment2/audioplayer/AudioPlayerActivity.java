@@ -25,39 +25,33 @@ public class AudioPlayerActivity extends Activity implements
 	public final static String PARAM_TASK = "task";
 	public final static String PARAM_RESULT = "result";
 	public final static String PARAM_STATUS = "status";
-	public final static int STATUS_START = 100;
-	public final static int STATUS_FINISH = 200;
-	public final static String START_PLAYER_ACTION = "play";
-	public final static String STOP_PLAYER_ACTION = "pause";
+	public final static String ACTION_START_PLAYER = "play";
+	public final static String ACTION_STOP_PLAYER = "pause";
+	public static final String ACTION_PLAYER_ID = "AUDIOPLAYER_ID";
 	private MediaPlayer mediaPlayer;
 	private SeekBar seekBarVolume;
 	private TextView currentVolumeNumber;
 	private Button buttonPlay;
 	private TextView textStatusPlaying;
-	private BroadcastReceiver broadcastReceiver;	
+	private BroadcastReceiver broadcastReceiver;
 	private ServiceConnection serviceConnection;
 	private boolean isPlayingFlag;
-	private int currentValue;	 
+	private int currentValue;
 	private AudioPlayerService.PlayerCustomBinder playerServicebinder;
 
-	public static final String PLAYER_ID = "AUDIOPLAYER_ID";
+	public void registerBroadcastReceiver() {
 
-	public void registerBroadcastReceivers() {
-		
 		broadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				switch (intent.getIntExtra(PLAYER_ID, 0)) {
-				case R.string.idle:
-
+				if (intent.getIntExtra(ACTION_PLAYER_ID, 0) == R.string.idle) {
 					buttonPlay.setText(R.string.play);
 					textStatusPlaying.setText(R.string.idle);
 					isPlayingFlag = false;
-					break;
 				}
 			}
 		};
-		IntentFilter progressfilter = new IntentFilter(PLAYER_ID);
+		IntentFilter progressfilter = new IntentFilter(ACTION_PLAYER_ID);
 		registerReceiver(broadcastReceiver, progressfilter);
 	}
 
@@ -65,7 +59,7 @@ public class AudioPlayerActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		Intent playerServiceIntent;
 		super.onCreate(savedInstanceState);
-		registerBroadcastReceivers();
+		registerBroadcastReceiver();
 		playerServiceIntent = new Intent(this, AudioPlayerService.class);
 		serviceConnection = new ServiceConnection() {
 			@Override
@@ -79,21 +73,20 @@ public class AudioPlayerActivity extends Activity implements
 			public void onServiceDisconnected(ComponentName name) {
 			}
 		};
-		buttonPlay = (Button) findViewById(R.id.btnPlay);
 		setContentView(R.layout.a_audioplayer);
+		buttonPlay = (Button) findViewById(R.id.btnPlay);
 		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 		textStatusPlaying.setText(R.string.idle);
 		if (savedInstanceState == null) {
 			startService(new Intent(this, AudioPlayerService.class));
+		} else {
+			if (isPlayingFlag) {
+				buttonPlay.setText(R.string.play);
+			} else {
+				buttonPlay.setText(R.string.pause);
+			}
 		}
 		bindService(playerServiceIntent, serviceConnection, BIND_AUTO_CREATE);
-		if ((savedInstanceState != null) && (isPlayingFlag)) {
-			buttonPlay = (Button) findViewById(R.id.btnPlay);
-			buttonPlay.setText(R.string.play);
-		} else if ((savedInstanceState != null) && (!isPlayingFlag)) {
-			buttonPlay = (Button) findViewById(R.id.btnPlay);
-			buttonPlay.setText(R.string.pause);
-		}
 
 		currentVolumeNumber = (TextView) findViewById(R.id.currentVolumeNumber);
 		seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
@@ -119,17 +112,18 @@ public class AudioPlayerActivity extends Activity implements
 		}
 	}
 
-	private void playerStart() {	
-		Intent playerServiceIntent = new Intent(START_PLAYER_ACTION);
+	private void playerStart() {
+		Intent playerServiceIntent = new Intent(ACTION_START_PLAYER);
 		AudioPlayerActivity.this.sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
 
 	private void playerPause() {
-		Intent playerServiceIntent = new Intent(STOP_PLAYER_ACTION);
+		Intent playerServiceIntent = new Intent(ACTION_STOP_PLAYER);
 		this.sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
+
 
 	public void onClickStart(View view) throws IOException {
 
@@ -150,7 +144,6 @@ public class AudioPlayerActivity extends Activity implements
 	}
 
 	public boolean playerIsPlaying() {
-
 		serviceConnection = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -174,7 +167,6 @@ public class AudioPlayerActivity extends Activity implements
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-
 		currentVolumeNumber.setText(String.valueOf(seekBar.getProgress()));
 		updateVolume();
 
