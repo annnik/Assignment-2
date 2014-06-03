@@ -17,22 +17,19 @@ public class AudioPlayerService extends Service {
 
 	private MediaPlayer mediaPlayer;
 	private AudioManager audioManager;
+	private BroadcastReceiver broadcastReceiver;
 	boolean isPlayingFlag = false;
-	BroadcastReceiver broadcastReceiver;
 	public static final String PLAYER_ID = "AUDIOPLAYER_ID";
 	public final static String START_PLAYER_ACTION = "play";
 	public final static String STOP_PLAYER_ACTION = "pause";
 
-	public void onCreate() {
-		super.onCreate();
-
+	public void registerBroadcastReceivers() {
 		broadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-
-				if (intent.getAction() == START_PLAYER_ACTION) {
+				if (intent.getAction().equals(START_PLAYER_ACTION)) {
 					start();
-				} else if (intent.getAction() == STOP_PLAYER_ACTION) {
+				} else if (intent.getAction().equals(STOP_PLAYER_ACTION)) {
 					stop();
 				}
 			}
@@ -41,6 +38,12 @@ public class AudioPlayerService extends Service {
 		registerReceiver(broadcastReceiver, startfilter);
 		IntentFilter stopfilter = new IntentFilter(STOP_PLAYER_ACTION);
 		registerReceiver(broadcastReceiver, stopfilter);
+	}
+
+	public void onCreate() {
+
+		super.onCreate();
+		registerBroadcastReceivers();
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(
 				this);
 		PendingIntent contentIntent = PendingIntent.getActivity(
@@ -53,9 +56,7 @@ public class AudioPlayerService extends Service {
 				.getSystemService(Context.AUDIO_SERVICE);
 		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(),
 				R.raw.music);
-
 		startForeground(1313, notification);
-
 	}
 
 	public void onDestroy() {
@@ -65,28 +66,23 @@ public class AudioPlayerService extends Service {
 
 	public int currentVolume() {
 		int currentValue;
-
 		currentValue = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 		return currentValue;
 	}
 
 	public void start() {
-
 		mediaPlayer.start();
 	}
 
 	public void stop() {
 		mediaPlayer.pause();
-
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
 		return Service.START_NOT_STICKY;
 	}
 
 	class PlayerCustomBinder extends Binder {
-
 		AudioPlayerService getService() {
 			return AudioPlayerService.this;
 		}

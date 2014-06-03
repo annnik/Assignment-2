@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -38,14 +37,13 @@ public class AudioPlayerActivity extends Activity implements
 	private BroadcastReceiver broadcastReceiver;	
 	private ServiceConnection serviceConnection;
 	private boolean isPlayingFlag;
-	private int currentValue;
-	private AudioManager audioManager;
+	private int currentValue;	 
 	private AudioPlayerService.PlayerCustomBinder playerServicebinder;
 
 	public static final String PLAYER_ID = "AUDIOPLAYER_ID";
 
 	public void registerBroadcastReceivers() {
-
+		
 		broadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -82,7 +80,6 @@ public class AudioPlayerActivity extends Activity implements
 			}
 		};
 		buttonPlay = (Button) findViewById(R.id.btnPlay);
-		audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 		setContentView(R.layout.a_audioplayer);
 		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 		textStatusPlaying.setText(R.string.idle);
@@ -123,18 +120,14 @@ public class AudioPlayerActivity extends Activity implements
 	}
 
 	private void playerStart() {	
-		
-		//playerServicebinder.getService().start();
-		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);;
-		playerServiceIntent.setAction(START_PLAYER_ACTION);
-		sendBroadcast(playerServiceIntent);
+		Intent playerServiceIntent = new Intent(START_PLAYER_ACTION);
+		AudioPlayerActivity.this.sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
 
 	private void playerPause() {
-		Intent playerServiceIntent = new Intent(this, AudioPlayerService.class);;
-		playerServiceIntent.setAction(STOP_PLAYER_ACTION);
-		sendBroadcast(playerServiceIntent);
+		Intent playerServiceIntent = new Intent(STOP_PLAYER_ACTION);
+		this.sendBroadcast(playerServiceIntent);
 		updateUI();
 	}
 
@@ -176,7 +169,6 @@ public class AudioPlayerActivity extends Activity implements
 	private void updateVolume() {
 		currentValue = seekBarVolume.getProgress();
 		playerServicebinder.getService().setVolume(currentValue);
-
 	}
 
 	@Override
