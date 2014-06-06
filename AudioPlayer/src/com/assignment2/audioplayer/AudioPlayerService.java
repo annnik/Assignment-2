@@ -17,12 +17,13 @@ public class AudioPlayerService extends Service {
 
 	private MediaPlayer mediaPlayer;
 	private AudioManager audioManager;
-	private BroadcastReceiver broadcastStartStopReceiver;
-	public final static String ACTION_START_PLAYER = "play";
-	public final static String ACTION_STOP_PLAYER = "pause";
+	//private BroadcastReceiver broadcastStartStopReceiver;
+	public static final String ACTION_PLAYER_ID = "com.assignment2.audioplayer.ACTION_START";
+	public final static String ACTION_START_PLAYER = "com.assignment2.audioplayer.ACTION_START_PLAYER";
+	public final static String ACTION_STOP_PLAYER = "com.assignment2.audioplayer.ACTION_STOP_PLAYER";
 
-	public void registerBroadcastReceiver() {
-		broadcastStartStopReceiver = new BroadcastReceiver() {
+	//public void registerBroadcastReceiver() {
+		private BroadcastReceiver	broadcastStartStopReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				if (intent.getAction().equals(ACTION_START_PLAYER)) {
@@ -32,16 +33,19 @@ public class AudioPlayerService extends Service {
 				}
 			}
 		};
-		IntentFilter startStopFilter = new IntentFilter();
-		startStopFilter.addAction(ACTION_START_PLAYER);
-		startStopFilter.addAction(ACTION_STOP_PLAYER);
-		registerReceiver(broadcastStartStopReceiver, startStopFilter);
-	}
+	
+//	}
 
 	public void onCreate() {
 
 		super.onCreate();
-		registerBroadcastReceiver();
+		
+		IntentFilter startStopFilter = new IntentFilter();
+		startStopFilter.addAction(ACTION_START_PLAYER);
+		startStopFilter.addAction(ACTION_STOP_PLAYER);
+		registerReceiver(broadcastStartStopReceiver, startStopFilter);
+		
+		
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(
 				this);
 		PendingIntent contentIntent = PendingIntent.getActivity(
