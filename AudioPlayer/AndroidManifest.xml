@@ -9,11 +9,11 @@
         android:targetSdkVersion="19" />
 
     <application
+        android:name="com.assignment2.audioplayer.AudioPlayerApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="com.assignment2.audioplayer.AudioPlayerApplication" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name="com.assignment2.audioplayer.AudioPlayerActivity"
             android:label="@string/app_name" >
@@ -23,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".AudioPlayerService"
+            android:enabled="true" >
+        </service>
     </application>
 
 </manifest>
