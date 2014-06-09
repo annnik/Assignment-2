@@ -17,35 +17,28 @@ public class AudioPlayerService extends Service {
 
 	private MediaPlayer mediaPlayer;
 	private AudioManager audioManager;
-	//private BroadcastReceiver broadcastStartStopReceiver;
 	public static final String ACTION_PLAYER_ID = "com.assignment2.audioplayer.ACTION_START";
 	public final static String ACTION_START_PLAYER = "com.assignment2.audioplayer.ACTION_START_PLAYER";
 	public final static String ACTION_STOP_PLAYER = "com.assignment2.audioplayer.ACTION_STOP_PLAYER";
 
-	//public void registerBroadcastReceiver() {
-		private BroadcastReceiver	broadcastStartStopReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				if (intent.getAction().equals(ACTION_START_PLAYER)) {
-					start();
-				} else if (intent.getAction().equals(ACTION_STOP_PLAYER)) {
-					stop();
-				}
+	private BroadcastReceiver broadcastStartStopReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ACTION_START_PLAYER)) {
+				start();
+			} else if (intent.getAction().equals(ACTION_STOP_PLAYER)) {
+				stop();
 			}
-		};
-	
-//	}
+		}
+	};
 
 	public void onCreate() {
 
 		super.onCreate();
-		
 		IntentFilter startStopFilter = new IntentFilter();
 		startStopFilter.addAction(ACTION_START_PLAYER);
 		startStopFilter.addAction(ACTION_STOP_PLAYER);
 		registerReceiver(broadcastStartStopReceiver, startStopFilter);
-		
-		
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(
 				this);
 		PendingIntent contentIntent = PendingIntent.getActivity(
@@ -58,7 +51,11 @@ public class AudioPlayerService extends Service {
 				.getSystemService(Context.AUDIO_SERVICE);
 		mediaPlayer = MediaPlayer.create(AudioPlayerApplication.getContext(),
 				R.raw.music);
-		startForeground(1000, notification);
+		if (isPlaying()) {
+			startForeground(1000, notification);
+		} else {
+			stopForeground(false);
+		}
 	}
 
 	public void onDestroy() {

@@ -24,12 +24,6 @@ public class AudioPlayerActivity extends Activity implements
 	public final static String PARAM_TASK = "task";
 	public final static String PARAM_RESULT = "result";
 	public final static String PARAM_STATUS = "status";
-	/*
-	 * public final static String ACTION_START_PLAYER =
-	 * "com.assignment2.audioplayer.ACTION_START_PLAYER"; public final static
-	 * String ACTION_STOP_PLAYER =
-	 * "com.assignment2.audioplayer.ACTION_STOP_PLAYER";
-	 */
 
 	private MediaPlayer mediaPlayer;
 	private SeekBar seekBarVolume;
@@ -38,8 +32,6 @@ public class AudioPlayerActivity extends Activity implements
 	private TextView textStatusPlaying;
 	private BroadcastReceiver broadcastReceiver;
 	private ServiceConnection serviceConnection;
-	////private boolean isPlayingFlag;
-	private int currentValue;
 	private AudioPlayerService.PlayerCustomBinder playerServicebinder;
 
 	public void registerBroadcastReceiver() {
@@ -50,7 +42,6 @@ public class AudioPlayerActivity extends Activity implements
 				if (intent.getIntExtra(AudioPlayerService.ACTION_PLAYER_ID, 0) == R.string.idle) {
 					buttonPlay.setText(R.string.play);
 					textStatusPlaying.setText(R.string.idle);
-					//isPlayingFlag = false;
 				}
 			}
 		};
@@ -64,35 +55,27 @@ public class AudioPlayerActivity extends Activity implements
 		Intent playerServiceIntent;
 		super.onCreate(savedInstanceState);
 		registerBroadcastReceiver();
-		playerServiceIntent = new Intent(this, AudioPlayerService.class);
 		serviceConnection = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder binder) {
 				playerServicebinder = (AudioPlayerService.PlayerCustomBinder) binder;
-				//isPlayingFlag = ((AudioPlayerService.PlayerCustomBinder) binder)
-						//.getService().isPlaying();
 			}
 
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
 			}
 		};
-
+		playerServiceIntent = new Intent(this, AudioPlayerService.class);
 		bindService(playerServiceIntent, serviceConnection, BIND_AUTO_CREATE);
 		setContentView(R.layout.a_audioplayer);
 		buttonPlay = (Button) findViewById(R.id.btnPlay);
 		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-		textStatusPlaying.setText(R.string.idle);
-
 		if (savedInstanceState == null) {
-			startService(new Intent(this, AudioPlayerService.class));
-			// startService(playerServiceIntent);
+			startService(playerServiceIntent);
 			textStatusPlaying.setText(R.string.idle);
 		} else {
-			if (savedInstanceState != null)
-				updateUI();
+			updateUI();
 		}
-
 		currentVolumeNumber = (TextView) findViewById(R.id.currentVolumeNumber);
 		seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
 		seekBarVolume.setMax(99);
@@ -100,18 +83,17 @@ public class AudioPlayerActivity extends Activity implements
 	}
 
 	private void updateUI() {
-
-		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
-		if (playerServicebinder.getService().isPlaying()) {
-
-			textStatusPlaying.setText(R.string.paused);
-			buttonPlay = (Button) findViewById(R.id.btnPlay);
-			buttonPlay.setText(R.string.play);
-		} else  {
-
-			textStatusPlaying.setText(R.string.playing);
-			buttonPlay = (Button) findViewById(R.id.btnPlay);
-			buttonPlay.setText(R.string.pause);
+		if (playerServicebinder != null) {
+			textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+			if (playerServicebinder.getService().isPlaying()) {
+				textStatusPlaying.setText(R.string.paused);
+				buttonPlay = (Button) findViewById(R.id.btnPlay);
+				buttonPlay.setText(R.string.play);
+			} else {
+				textStatusPlaying.setText(R.string.playing);
+				buttonPlay = (Button) findViewById(R.id.btnPlay);
+				buttonPlay.setText(R.string.pause);
+			}
 		}
 	}
 
@@ -133,32 +115,34 @@ public class AudioPlayerActivity extends Activity implements
 
 		switch (view.getId()) {
 		case R.id.btnPlay:
-			if (!playerServicebinder.getService().isPlaying()) {
-				playerStart();
-				//isPlayingFlag=true;
-				// playerServicebinder.getService().isPlaying() = true;
+			if (playerServicebinder != null) {
+				if (!playerServicebinder.getService().isPlaying()) {
+					playerStart();
+				} else {
+					playerPause();
+				}
 			} else {
-				playerPause();
-				//isPlayingFlag=false;
-				// playerServicebinder.getService().isPlaying() = false;
+				playerStart();
 			}
 			break;
 		}
 		if (mediaPlayer == null) {
 			return;
 		}
+
 	}
 
 	private void updateVolume() {
 		seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
-		currentValue = seekBarVolume.getProgress();
-		playerServicebinder.getService().setVolume(currentValue);
+		if (playerServicebinder != null) {
+			playerServicebinder.getService().setVolume(
+					seekBarVolume.getProgress());
+		}
 	}
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-
 		currentVolumeNumber.setText(String.valueOf(seekBar.getProgress()));
 		updateVolume();
 
