@@ -24,7 +24,6 @@ public class AudioPlayerActivity extends Activity implements
 	public final static String PARAM_TASK = "task";
 	public final static String PARAM_RESULT = "result";
 	public final static String PARAM_STATUS = "status";
-
 	private MediaPlayer mediaPlayer;
 	private SeekBar seekBarVolume;
 	private TextView currentVolumeNumber;
@@ -83,17 +82,20 @@ public class AudioPlayerActivity extends Activity implements
 	}
 
 	private void updateUI() {
+		textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
+		buttonPlay = (Button) findViewById(R.id.btnPlay);
 		if (playerServicebinder != null) {
-			textStatusPlaying = (TextView) findViewById(R.id.statusOfMusic);
 			if (playerServicebinder.getService().isPlaying()) {
 				textStatusPlaying.setText(R.string.paused);
-				buttonPlay = (Button) findViewById(R.id.btnPlay);
 				buttonPlay.setText(R.string.play);
 			} else {
 				textStatusPlaying.setText(R.string.playing);
-				buttonPlay = (Button) findViewById(R.id.btnPlay);
 				buttonPlay.setText(R.string.pause);
 			}
+			
+		} else {
+			textStatusPlaying.setText(R.string.binding);
+			buttonPlay.setText(R.string.binding);
 		}
 	}
 
